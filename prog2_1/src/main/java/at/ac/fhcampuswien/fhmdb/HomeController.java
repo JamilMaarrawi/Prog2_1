@@ -36,11 +36,11 @@ public class HomeController implements Initializable {
     public List<Movie> allMovies = Movie.initializeMovies();
     public List<Genre> allGenres = new ArrayList<>(EnumSet.allOf(Genre.class));    /// Creates a List with all genres
 
-    private  ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
+    ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //observableMovies.addAll(allMovies);         // add dummy data to observable list
+        observableMovies.addAll(allMovies);         // add dummy data to observable list
 
         // initialize UI stuff
         movieListView.setItems(observableMovies);   // set data of observable list to list view
@@ -71,12 +71,30 @@ public class HomeController implements Initializable {
         searchBtn.setOnAction(actionEvent -> {
             observableMovies.removeAll(allMovies);
             for (Movie m : allMovies) {
-                if(m.getGenres().contains(genreComboBox.getValue()))
-                    observableMovies.add(m);
+                if (searchField != null && genreComboBox.getValue() != null) {
+                    if (m.getGenres().contains(genreComboBox.getValue()) && (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText())))
+                        observableMovies.add(m);
+                } else if (searchField == null){
+                    if (m.getGenres().contains(genreComboBox.getValue()))
+                        observableMovies.add(m);
+                } else if (genreComboBox.getValue() == null){
+                    if (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText()))
+                        observableMovies.add(m);
+                }
             }
             movieListView.setCellFactory(movieListView -> new MovieCell());
         });
 
 
+    }
+    public boolean compareStrings(String a, String b){
+        String a1 = a;
+        a1 = a1.toLowerCase();
+        String b1 = b;
+        b1 = b1.toLowerCase();
+        if (a1.contains(b1))
+            return true;
+
+        return false;
     }
 }
