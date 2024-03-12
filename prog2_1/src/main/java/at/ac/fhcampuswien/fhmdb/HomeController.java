@@ -33,6 +33,9 @@ public class HomeController implements Initializable {
     @FXML
     public JFXButton sortBtn;
 
+    @FXML
+    public JFXButton unFilterBtn;
+
     public List<Movie> allMovies = Movie.initializeMovies();
     public List<Genre> allGenres = new ArrayList<>(EnumSet.allOf(Genre.class));    /// Creates a List with all genres
 
@@ -53,39 +56,48 @@ public class HomeController implements Initializable {
         // TODO add event handlers to buttons and call the regarding methods
         // either set event handlers in the fxml file (onAction) or add them here
 
-        // Sort button example:
-        sortBtn.setOnAction(actionEvent -> {
-            if(sortBtn.getText().equals("Sort (asc)")) {
-                // TODO sort observableMovies ascending
-                observableMovies.sort(Comparator.comparing(Movie::getTitle)); /// sort list alphabetically
-
-                sortBtn.setText("Sort (desc)");
-            } else {
-                // TODO sort observableMovies descending
-                observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed()); /// sort list alphabetically reversed
-
-                sortBtn.setText("Sort (asc)");
-            }
-        });
-
-        searchBtn.setOnAction(actionEvent -> {
-            observableMovies.removeAll(allMovies);
-            for (Movie m : allMovies) {
-                if (searchField != null && genreComboBox.getValue() != null) {
-                    if (m.getGenres().contains(genreComboBox.getValue()) && (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText())))
-                        observableMovies.add(m);
-                } else if (searchField == null){
-                    if (m.getGenres().contains(genreComboBox.getValue()))
-                        observableMovies.add(m);
-                } else if (genreComboBox.getValue() == null){
-                    if (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText()))
-                        observableMovies.add(m);
-                }
-            }
-            movieListView.setCellFactory(movieListView -> new MovieCell());
-        });
+        sortBtn.setOnAction(actionEvent -> {sortBtnHandler();});
+        searchBtn.setOnAction(actionEvent -> {searchBtnHandler();});
+        unFilterBtn.setOnAction(actionEvent -> {unFilterBtnHandler();});
 
 
+    }
+    public void searchBtnHandler(){
+        observableMovies.removeAll(allMovies);
+        for (Movie m : allMovies) {
+            if (searchField.getText() != null && genreComboBox.getValue() != null) {
+                if (m.getGenres().contains(genreComboBox.getValue()) && (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText())))
+                    observableMovies.add(m);
+            } else if (searchField.getText() == null && genreComboBox.getValue() != null){
+                if (m.getGenres().contains(genreComboBox.getValue()))
+                    observableMovies.add(m);
+            } else if (genreComboBox.getValue() == null && searchField.getText() != null){
+                if (compareStrings(m.getTitle(),searchField.getText()) || compareStrings(m.getDescription(),searchField.getText()))
+                    observableMovies.add(m);
+            } else
+                observableMovies.add(m);
+        }
+        for( Movie m : observableMovies)
+            System.out.print("("+m.getTitle()+") ");
+        System.out.println();
+    }
+    public void sortBtnHandler(){
+        if(sortBtn.getText().equals("Sort (asc)")) {
+            // TODO sort observableMovies ascending
+            observableMovies.sort(Comparator.comparing(Movie::getTitle)); /// sort list alphabetically
+
+            sortBtn.setText("Sort (desc)");
+        } else {
+            // TODO sort observableMovies descending
+            observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed()); /// sort list alphabetically reversed
+
+            sortBtn.setText("Sort (asc)");
+        }
+    }
+    public void unFilterBtnHandler(){
+        searchField.setText(null);
+        genreComboBox.setValue(null);
+        searchBtnHandler();
     }
     public boolean compareStrings(String a, String b){
         String a1 = a;

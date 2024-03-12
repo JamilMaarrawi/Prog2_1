@@ -36,6 +36,7 @@ public class Movie {
         lifeIsBeautifulGenres.add(Genre.ROMANCE);
         movies.add(new Movie("Life is Beautiful", "When an open-minded Jewish librarian and his son become victims of the Holocaust, he uses a perfect mixture of will, humor, and imagination to protect his son from the dangers around their camp.", lifeIsBeautifulGenres));
 
+
         List<Genre> pussInBootsGenres = new ArrayList<>();
         pussInBootsGenres.add(Genre.COMEDY);
         pussInBootsGenres.add(Genre.FAMILY);
